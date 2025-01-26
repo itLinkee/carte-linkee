@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Carte Google Maps avec Map ID</title>
+    <style>
+      /* Le conteneur de la carte doit avoir une hauteur et une largeur définies */
+      #map {
+        height: 600px; 
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Exemple de Carte avec Map ID Google</h1>
+    
+    <!-- Conteneur pour la carte -->
+    <div id="map"></div>
+    
+    <!-- 
+      Charge la Google Maps JS API. 
+      Le paramètre "callback=initMap" invoque la fonction initMap au chargement du script.
+      Les "libraries" peuvent être ajoutées si vous souhaitez des services supplémentaires (places, geometry, etc.).
+    -->
+    <script
+      async
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-EiSDiT_QITPtDqZmLEJAbiFcLiSb7r0&callback=initMap&libraries=geometry"
+    ></script>
+    
+    <script>
+      let map;           // L'objet carte Google Maps
+      let markers = [];  // Pour stocker les marqueurs créés
+      const dataUrl = "https://votre-hebergement/.../data.json"; 
+        // ← Remplacez par l'URL de votre JSON
+
+      // Fonction appelée automatiquement une fois l'API chargée
+      function initMap() {
+        // Initialisation de la carte avec votre Map ID
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 46.5, lng: 2.5 }, // Centre approximatif (France)
+          zoom: 5,
+          mapId: "e7ce213688d1abda"            // ← Votre Map ID créé dans la console Google Cloud
+        });
+
+        // Récupérer les données (points) depuis data.json
+        fetch(dataUrl)
+          .then(response => response.json())
+          .then(data => {
+            // Pour chaque élément du tableau, on crée un marqueur
+            data.forEach(item => {
+              addMarker(item);
+            });
+          })
+          .catch(error => {
+            console.error("Erreur lors du fetch du JSON:", error);
+          });
+      }
+
+      // Crée et place un marqueur sur la carte
+      function addMarker(item) {
+        const position = { lat: item.lat, lng: item.lng };
+        const marker = new google.maps.Marker({
+          position,
+          map,
+          title: item.name || "Point sans nom"
+        });
+
+        // Exemple: info-bulle à l'ouverture du marqueur
+        const infoWindow = new google.maps.InfoWindow({
+          content: `<strong>${item.name}</strong><br>Lat: ${item.lat}, Lng: ${item.lng}`
+        });
+
+        marker.addListener("click", () => {
+          infoWindow.open(map, marker);
+        });
+
+        markers.push(marker);
+      }
+    </script>
+  </body>
+</html>
