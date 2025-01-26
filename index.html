@@ -31,15 +31,15 @@
     <script>
       let map;           // L'objet carte Google Maps
       let markers = [];  // Pour stocker les marqueurs créés
-      const dataUrl = "https://votre-hebergement/.../data.json"; 
+      const dataUrl = "https://github.com/itLinkee/carte-linkee/data.json"; 
         // ← Remplacez par l'URL de votre JSON
 
       // Fonction appelée automatiquement une fois l'API chargée
       function initMap() {
         // Initialisation de la carte avec votre Map ID
         map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 46.5, lng: 2.5 }, // Centre approximatif (France)
-          zoom: 5,
+          center: { lat: 48.8566, lng: 2.3522 },
+          zoom: 12,
           mapId: "e7ce213688d1abda"            // ← Votre Map ID créé dans la console Google Cloud
         });
 
