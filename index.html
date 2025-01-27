@@ -29,7 +29,7 @@
 
     <!-- Charge la Google Maps API avec votre clé et callback=initMap -->
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-EiSDiT_QITPtDqZmLEJAbiFcLiSb7r0&callback=initMap"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-EiSDiT_QITPtDqZmLEJAbiFcLiSb7r0&callback=initMap&libraries=marker"
       async
       defer
     ></script>
@@ -60,14 +60,14 @@
       };
 
       
-      const DEFAULT_STATUT_ICON = "http://maps.google.com/mapfiles/ms/icons/grey-dot.png";
+      const DEFAULT_STATUT_ICON = "https://maps.google.com/mapfiles/ms/icons/grey-dot.png";
       
       const ICONS_BY_COLLECT = {
         "Collecté": "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
         "Livré": "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
         "Annulé": "https://maps.google.com/mapfiles/ms/icons/grey-dot.png"
       };
-      const DEFAULT_COLLECT_ICON = "http://maps.google.com/mapfiles/ms/icons/grey-dot.png";
+      const DEFAULT_COLLECT_ICON = "https://maps.google.com/mapfiles/ms/icons/grey-dot.png";
       
 
 
@@ -77,7 +77,8 @@
       function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
           center: { lat: 48.8566, lng: 2.3522 },
-          zoom: 12
+          zoom: 12,
+          mapId = "e7ce213688d1abda",
         });
 
         // Premier chargement des données
@@ -129,9 +130,9 @@
         
 
           // Création du marqueur
-          const marker = new google.maps.Marker({
+          const marker = new google.maps.Marker.AdvancedMarkerElement({
             position: { lat: item.lat, lng: item.lng },
-            map: map,
+            map,
             title: item.name || "Sans nom",
             icon: iconUrl
           });
