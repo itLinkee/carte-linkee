@@ -72,12 +72,12 @@
           default:
             iconUrl = "icon-grey.png";
             break;
-        }
+          }
         const position = { lat: item.lat, lng: item.lng };
         const marker = new google.maps.Marker({
           position,
           map,
-          title: item.name || "Point sans nom"
+          title: item.name || "Point sans nom",
           icon: {
             url: iconUrl,
             scaledSize: new google.maps.Size(32, 32)
