@@ -29,7 +29,7 @@
 
     <!-- Charge la Google Maps API avec votre clé et callback=initMap -->
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-EiSDiT_QITPtDqZmLEJAbiFcLiSb7r0&callback=initMap&libraries=marker"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-EiSDiT_QITPtDqZmLEJAbiFcLiSb7r0&callback=initMap&libraries=marker&v=beta"
       async
       defer
     ></script>
@@ -130,7 +130,7 @@
         
 
           // Création du marqueur
-          const marker = new google.maps.Marker.AdvancedMarkerElement({
+          const marker = new google.maps.marker.AdvancedMarkerElement({
             position: { lat: item.lat, lng: item.lng },
             map,
             title: item.name || "Sans nom",
