@@ -21,6 +21,7 @@
       <select id="colorModeSelect">
         <option value="type" selected>Type</option>
         <option value="statut">Statut</option>
+        <option value="Collected">Collecté?</option>
       </select>
     </div>
 
@@ -53,10 +54,21 @@
 
       const ICONS_BY_STATUT = {
         "À notifier": "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
-        "Livré":    "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-        "Collecté": "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+        "Collecte déclarée ok":    "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+        "Collecte déclarée ko": "https://maps.google.com/mapfiles/ms/icons/grey-dot.png",
+        "Panier déclaré": "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
       };
+
+      
       const DEFAULT_STATUT_ICON = "http://maps.google.com/mapfiles/ms/icons/grey-dot.png";
+      
+      const ICONS_BY_COLLECT = {
+        "Collecté" = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+        "Livré" = "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+        "Annulé" = "https://maps.google.com/mapfiles/ms/icons/grey-dot.png",
+      };
+      const DEFAULT_COLLECT_ICON = "http://maps.google.com/mapfiles/ms/icons/grey-dot.png";
+      
 
 
       // ---------------------------
@@ -109,9 +121,12 @@
           let iconUrl;
           if (mode === "type") {
             iconUrl = ICONS_BY_TYPE[item.type] || DEFAULT_TYPE_ICON;
-          } else {
+          } else if (mode === "statut") {
             iconUrl = ICONS_BY_STATUT[item.statut] || DEFAULT_STATUT_ICON;
+          } else {
+            iconUrl = ICONS_BY_COLLECT[item.collected] || DEFAULT_COLLECT_ICON;
           }
+        });
 
           // Création du marqueur
           const marker = new google.maps.Marker({
