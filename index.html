@@ -63,9 +63,9 @@
       const DEFAULT_STATUT_ICON = "http://maps.google.com/mapfiles/ms/icons/grey-dot.png";
       
       const ICONS_BY_COLLECT = {
-        "Collecté" = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-        "Livré" = "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-        "Annulé" = "https://maps.google.com/mapfiles/ms/icons/grey-dot.png",
+        "Collecté": "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+        "Livré": "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+        "Annulé": "https://maps.google.com/mapfiles/ms/icons/grey-dot.png"
       };
       const DEFAULT_COLLECT_ICON = "http://maps.google.com/mapfiles/ms/icons/grey-dot.png";
       
@@ -126,7 +126,7 @@
           } else {
             iconUrl = ICONS_BY_COLLECT[item.collected] || DEFAULT_COLLECT_ICON;
           }
-        });
+        
 
           // Création du marqueur
           const marker = new google.maps.Marker({
@@ -142,6 +142,7 @@
               <strong>${item.name}</strong><br>
               Type : ${item.type}<br>
               Statut : ${item.statut}<br>
+              Asso partenaire : ${item.partenaire}<br>
             `
           });
           marker.addListener("click", () => {
