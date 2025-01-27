@@ -2,120 +2,148 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Carte Google Maps avec Map ID</title>
+    <title>Carte Links - Pris par les citoyens ou statut</title>
     <style>
-      /* Le conteneur de la carte doit avoir une hauteur et une largeur définies */
       #map {
-        height: 600px; 
+        height: 600px;
         width: 100%;
+      }
+      #controls {
+        margin: 10px 0;
       }
     </style>
   </head>
-
   <body>
-    <h1>Exemple de Carte avec Map ID Google</h1>
-    
-    <!-- Conteneur pour la carte -->
+    <h1>Carte avec deux modes de couleur et rafraîchissement auto</h1>
+
+    <div id="controls">
+      <label for="colorModeSelect">Colorer selon :</label>
+      <select id="colorModeSelect">
+        <option value="type" selected>Type</option>
+        <option value="statut">Statut</option>
+      </select>
+    </div>
+
     <div id="map"></div>
-    
-    <!-- 
-      Charge la Google Maps JS API. 
-      Le paramètre "callback=initMap" invoque la fonction initMap au chargement du script.
-      Les "libraries" peuvent être ajoutées si vous souhaitez des services supplémentaires (places, geometry, etc.).
-    -->
+
+    <!-- Charge la Google Maps API avec votre clé et callback=initMap -->
     <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-EiSDiT_QITPtDqZmLEJAbiFcLiSb7r0&callback=initMap"
       async
       defer
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-EiSDiT_QITPtDqZmLEJAbiFcLiSb7r0&callback=initMap&libraries=geometry"
     ></script>
-    
-    <script>
-      let map;           // L'objet carte Google Maps
-      let markers = [];  // Pour stocker les marqueurs créés
-      const dataUrl = "https://raw.githubusercontent.com/itLinkee/carte-linkee/main/data.json"; 
-        // ← Remplacez par l'URL de votre JSON
-      const REFRESH_INTERVAL = 5 * 60 * 1000
 
-      // Fonction appelée automatiquement une fois l'API chargée
+    <script>
+      let map;
+      let markers = [];
+      let dataPoints = []; // Les données (points) récupérées
+
+      // URL du JSON avec les points
+      const dataUrl = "https://github.com/itLinkee/carte-linkee/data.json";
+
+      // Intervalle de refresh : toutes les 5 minutes
+      const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 min en millisecondes
+
+      // Dictionnaires d'icônes par type/statut
+      const ICONS_BY_TYPE = {
+        "Pris":     "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+        "Pas pris": "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+      };
+      const DEFAULT_TYPE_ICON = "https://maps.google.com/mapfiles/ms/icons/grey-dot.png";
+
+      const ICONS_BY_STATUT = {
+        "À notifier": "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+        "Livré":    "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+        "Collecté": "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+      };
+      const DEFAULT_STATUT_ICON = "http://maps.google.com/mapfiles/ms/icons/grey-dot.png";
+
+
+      // ---------------------------
+      // 1) Initialisation de la carte
+      // ---------------------------
       function initMap() {
-        // Initialisation de la carte avec votre Map ID
         map = new google.maps.Map(document.getElementById("map"), {
           center: { lat: 48.8566, lng: 2.3522 },
-          zoom: 12,
-          mapId: "e7ce213688d1abda"            // ← Votre Map ID créé dans la console Google Cloud
+          zoom: 12
         });
 
-        loadMarkers();
+        // Premier chargement des données
+        loadDataAndDraw();
 
+        // Mettre en place un rafraîchissement auto toutes les 5 minutes
         setInterval(() => {
-          loadMarkers();
+          loadDataAndDraw();
         }, REFRESH_INTERVAL);
+
+        // Changement du mode de coloration via le <select>
+        document.getElementById("colorModeSelect").addEventListener("change", () => {
+          // On redessine simplement les marqueurs avec le nouveau mode
+          drawMarkers();
+        });
       }
 
-      function loadMarkers(){
-        // Récupérer les données (points) depuis data.json
+      // ---------------------------
+      // 2) Charger (fetch) le JSON, stocker dans dataPoints, puis dessiner
+      // ---------------------------
+      function loadDataAndDraw() {
         fetch(dataUrl)
           .then(response => response.json())
           .then(data => {
-            cleanMarkers();
-            // Pour chaque élément du tableau, on crée un marqueur
-            data.forEach(item => {
-              addMarker(item);
-            });
+            dataPoints = data; // Mémorise les points
+            drawMarkers();    // Dessine selon le mode actuel
           })
-          .catch(error => {
-            console.error("Erreur lors du fetch du JSON:", error);
+          .catch(err => console.error("Erreur lors du fetch du JSON:", err));
+      }
+
+      // ---------------------------
+      // 3) Dessiner les marqueurs selon le mode sélectionné
+      // ---------------------------
+      function drawMarkers() {
+        clearMarkers(); // Supprime les anciens marqueurs
+
+        // Récupère le mode (type ou statut) depuis le select
+        const mode = document.getElementById("colorModeSelect").value;
+
+        dataPoints.forEach(item => {
+          let iconUrl;
+          if (mode === "type") {
+            iconUrl = ICONS_BY_TYPE[item.type] || DEFAULT_TYPE_ICON;
+          } else {
+            iconUrl = ICONS_BY_STATUT[item.statut] || DEFAULT_STATUT_ICON;
+          }
+
+          // Création du marqueur
+          const marker = new google.maps.Marker({
+            position: { lat: item.lat, lng: item.lng },
+            map: map,
+            title: item.name || "Sans nom",
+            icon: iconUrl
           });
+
+          // (Optionnel) Info-bulle
+          const infoWindow = new google.maps.InfoWindow({
+            content: `
+              <strong>${item.name}</strong><br>
+              Type : ${item.type}<br>
+              Statut : ${item.statut}<br>
+            `
+          });
+          marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+          });
+
+          markers.push(marker);
+        });
       }
 
-      // Crée et place un marqueur sur la carte
-      function addMarker(item) {
-        let iconUrl = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-
-        // Ex: style selon "type"
-        switch (item.type) {
-          case "Pris":
-            iconUrl = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
-            break;
-          case "Pas pris":
-            iconUrl = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-            break;
-          default:
-            iconUrl = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-            break;
-          }
-        const position = { lat: item.lat, lng: item.lng };
-        const marker = new google.maps.Marker({
-          position,
-          map,
-          title: item.name || "Point sans nom",
-          icon: {
-            url: iconUrl,
-            scaledSize: new google.maps.Size(32, 32)
-          }
-        });
-
-        // Exemple: info-bulle à l'ouverture du marqueur
-        const infoWindow = new google.maps.InfoWindow({
-          content: `<strong>${item.name}</strong><br>
-          Statut: ${item.statut}<br>
-          Type: ${item.type}<br>
-          Partenaire: ${item.partenaire || "Aucun"}<br>`
-        });
-
-        marker.addListener("click", () => {
-          infoWindow.open(map, marker);
-        });
-
-        
-
-        markers.push(marker);
+      // ---------------------------
+      // 4) Supprimer tous les marqueurs de la carte
+      // ---------------------------
+      function clearMarkers() {
+        markers.forEach(m => m.setMap(null));
+        markers = [];
       }
-
-    function cleanMarkers() {
-          markers.forEach(m => m.setMap(null));
-          markers = [];
-        }
     </script>
   </body>
 </html>
