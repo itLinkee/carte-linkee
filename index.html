@@ -25,6 +25,7 @@
     -->
     <script
       async
+      defer
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-EiSDiT_QITPtDqZmLEJAbiFcLiSb7r0&callback=initMap&libraries=geometry"
     ></script>
     
@@ -33,6 +34,7 @@
       let markers = [];  // Pour stocker les marqueurs créés
       const dataUrl = "https://raw.githubusercontent.com/itLinkee/carte-linkee/main/data.json"; 
         // ← Remplacez par l'URL de votre JSON
+      const REFRESH_INTERVAL = 5 * 60 * 1000
 
       // Fonction appelée automatiquement une fois l'API chargée
       function initMap() {
@@ -43,10 +45,19 @@
           mapId: "e7ce213688d1abda"            // ← Votre Map ID créé dans la console Google Cloud
         });
 
+        loadMarkers();
+
+        setInterval(() => {
+          loadMarkers();
+        }, REFRESH_INTERVAL);
+      }
+
+      function loadMarkers(){
         // Récupérer les données (points) depuis data.json
         fetch(dataUrl)
           .then(response => response.json())
           .then(data => {
+            cleanMarkers();
             // Pour chaque élément du tableau, on crée un marqueur
             data.forEach(item => {
               addMarker(item);
