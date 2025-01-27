@@ -59,18 +59,18 @@
 
       // Crée et place un marqueur sur la carte
       function addMarker(item) {
-        let iconUrl = "icon-default.png";
+        let iconUrl = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
 
         // Ex: style selon "type"
         switch (item.type) {
           case "Pris":
-            iconUrl = "icon-green.png";
+            iconUrl = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
             break;
           case "Pas pris":
-            iconUrl = "icon-red.png";
+            iconUrl = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
             break;
           default:
-            iconUrl = "icon-grey.png";
+            iconUrl = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
             break;
           }
         const position = { lat: item.lat, lng: item.lng };
