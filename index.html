@@ -107,6 +107,11 @@
           infoWindow.open(map, marker);
         });
 
+        function cleanMarkers() {
+          markers.forEach(m => m.setMap(null));
+          markers = [];
+        }
+
         markers.push(marker);
       }
     </script>
