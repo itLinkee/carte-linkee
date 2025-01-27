@@ -59,16 +59,37 @@
 
       // Crée et place un marqueur sur la carte
       function addMarker(item) {
+        let iconUrl = "icon-default.png";
+
+        // Ex: style selon "type"
+        switch (item.type) {
+          case "Pris":
+            iconUrl = "icon-green.png";
+            break;
+          case "Pas pris":
+            iconUrl = "icon-red.png";
+            break;
+          default:
+            iconUrl = "icon-grey.png";
+            break;
+        }
         const position = { lat: item.lat, lng: item.lng };
         const marker = new google.maps.Marker({
           position,
           map,
           title: item.name || "Point sans nom"
+          icon: {
+            url: iconUrl,
+            scaledSize: new google.maps.Size(32, 32)
+          }
         });
 
         // Exemple: info-bulle à l'ouverture du marqueur
         const infoWindow = new google.maps.InfoWindow({
-          content: `<strong>${item.name}</strong><br>Lat: ${item.lat}, Lng: ${item.lng}`
+          content: `<strong>${item.name}</strong><br>
+          Statut: ${item.statut}<br>
+          Type: ${item.type}<br>
+          Partenaire: ${item.partenaire || "Aucun"}<br>`
         });
 
         marker.addListener("click", () => {
