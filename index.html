@@ -146,12 +146,12 @@
 
           // (Optionnel) Info-bulle
           marker.addListener("click", () => {
-            const contentString
+            const contentString = `
               <strong>${item.name}</strong><br>
               Type : ${item.type}<br>
               Statut : ${item.statut}<br>
               Asso partenaire : ${item.partenaire}<br>
-              ;
+              `;
             infoWindow.setContent(contentString);
             infoWindow.open(map, marker);
           });
