@@ -38,6 +38,7 @@
       let map;
       let markers = [];
       let dataPoints = []; // Les données (points) récupérées
+      let infoWindow;
 
       // URL du JSON avec les points
       const dataUrl = "https://raw.githubusercontent.com/itLinkee/carte-linkee/refs/heads/main/data.json";
@@ -81,6 +82,8 @@
           mapId: "e7ce213688d1abda",
         });
 
+        infoWindow = new google.maps.InfoWindow();
+
         // Premier chargement des données
         loadDataAndDraw();
 
@@ -93,6 +96,10 @@
         document.getElementById("colorModeSelect").addEventListener("change", () => {
           // On redessine simplement les marqueurs avec le nouveau mode
           drawMarkers();
+        });
+
+        map.addListener("click", () => {
+          infoWindow.close();
         });
       }
 
@@ -138,18 +145,17 @@
           });
 
           // (Optionnel) Info-bulle
-          const infoWindow = new google.maps.InfoWindow({
-            content: `
+          marker.addListener("click", () => {
+            const contentString
               <strong>${item.name}</strong><br>
               Type : ${item.type}<br>
               Statut : ${item.statut}<br>
               Asso partenaire : ${item.partenaire}<br>
-            `
-          });
-          marker.addListener("click", () => {
+              ;
+            infoWindow.setContent(contentString);
             infoWindow.open(map, marker);
           });
-
+      
           markers.push(marker);
         });
       }
