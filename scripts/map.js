@@ -26,6 +26,8 @@ function initMap() {
     });
 }
 
+window.initMap = initMap;
+
 function loadDataAndDraw() {
     fetch(dataUrl)
         .then(response => response.json())
