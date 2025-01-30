@@ -11,7 +11,6 @@ function drawMarkers() {
     filteredData.sort((a, b) => (a.ordre || 0) - (b.ordre || 0));
 
     filteredData.forEach((item) => {
-        let iconUrl;
         let backgroundColor = "808080"; // Gris par défaut
 
         // Déterminer la couleur de fond selon le mode sélectionné
@@ -24,51 +23,61 @@ function drawMarkers() {
         }
 
         if (selectedLinker !== "all" && item.ordre) {
-            // Utiliser une icône numérotée si un Linker spécifique est sélectionné et un ordre existe
-            iconUrl = getNumberedIcon(item.ordre, backgroundColor);
+            // Utiliser une icône numérotée stylisée en CSS pour un Linker spécifique
+            createNumberedMarker({ lat: item.lat, lng: item.lng }, item.ordre, backgroundColor, map);
         } else {
-            // Sinon, utiliser les icônes standardisées selon le mode sélectionné
-            iconUrl = ICONS_BY_TYPE[item.type] || ICONS_BY_STATUT[item.statut] || ICONS_BY_COLLECT[item.collected] || DEFAULT_TYPE_ICON;
+            // Créer un marqueur standard si aucun Linker spécifique n'est sélectionné
+            const marker = new google.maps.Marker({
+                position: { lat: item.lat, lng: item.lng },
+                map,
+                title: item.name || "Sans nom",
+                icon: {
+                    url: ICONS_BY_TYPE[item.type] || DEFAULT_TYPE_ICON,
+                    scaledSize: new google.maps.Size(30, 30),
+                },
+            });
+
+            marker.addListener("click", () => {
+                const contentString = `
+                    <strong>${item.ordre ? item.ordre + ". " : ""}${item.name}</strong><br>
+                    Tournée : ${item.linker || "Non spécifié"}<br>
+                    Ordre : ${item.ordre || "Non défini"}<br>
+                    Type : ${item.type}<br>
+                    Statut : ${item.statut}<br>
+                    Asso partenaire : ${item.partenaire}<br>
+                `;
+                infoWindow.setContent(contentString);
+                infoWindow.open(map, marker);
+            });
+
+            markers.push(marker);
         }
-
-        // Création du marqueur
-        const marker = new google.maps.Marker({
-            position: { lat: item.lat, lng: item.lng },
-            map,
-            title: `${item.ordre ? item.ordre + ". " : ""}${item.name || "Sans nom"}`,
-            icon: {
-                url: iconUrl,
-                scaledSize: new google.maps.Size(30, 30),
-            },
-            label: selectedLinker !== "all" && item.ordre ? {
-                text: item.ordre.toString(),
-                color: "white",
-                fontSize: "12px",
-                fontWeight: "bold",
-            } : null
-        });
-
-        // Ajout de l'événement d'affichage d'infobulle
-        marker.addListener("click", () => {
-            const contentString = `
-                <strong>${item.ordre ? item.ordre + ". " : ""}${item.name}</strong><br>
-                Tournée : ${item.linker || "Non spécifié"}<br>
-                Ordre : ${item.ordre || "Non défini"}<br>
-                Type : ${item.type}<br>
-                Statut : ${item.statut}<br>
-                Asso partenaire : ${item.partenaire}<br>
-            `;
-            infoWindow.setContent(contentString);
-            infoWindow.open(map, marker);
-        });
-
-        markers.push(marker);
     });
 }
 
 /**
- * Génère une icône numérotée avec une couleur de fond spécifique
+ * Crée un marqueur personnalisé avec un numéro affiché en CSS
  */
-function getNumberedIcon(number, color) {
-    return `https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=${number}|${color}|FFFFFF`;
+function createNumberedMarker(position, number, color, map) {
+    const div = document.createElement("div");
+    div.className = "marker-label";
+    div.style.backgroundColor = `#${color}`;
+    div.textContent = number;
+
+    const overlay = new google.maps.OverlayView();
+    overlay.onAdd = function () {
+        const layer = this.getPanes().overlayMouseTarget;
+        layer.appendChild(div);
+    };
+
+    overlay.draw = function () {
+        const projection = this.getProjection();
+        const positionPixel = projection.fromLatLngToDivPixel(new google.maps.LatLng(position.lat, position.lng));
+        div.style.left = `${positionPixel.x}px`;
+        div.style.top = `${positionPixel.y}px`;
+    };
+
+    overlay.setMap(map);
+
+    markers.push(overlay);
 }
