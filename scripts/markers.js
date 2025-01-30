@@ -10,15 +10,17 @@ function drawMarkers() {
     console.log("Données filtrées :", filteredData);
 
     filteredData.forEach((item) => {
-        let color = "808080"; // Gris par défaut
+        let color = "808080"; // Couleur par défaut (gris)
 
         if (mode === "type") {
             color = getColorForType(item.type) || "808080";
         } else if (mode === "statut") {
             color = getColorForStatut(item.statut) || "808080";
-        } else {
+        } else if (mode === "Collected") {
             color = getColorForCollect(item.collected) || "808080";
         }
+
+        console.log(`Marker ${item.name} - Type : ${item.type}, Statut : ${item.statut}, Collecté : ${item.collected}, Couleur : ${color}`);
 
         if (selectedLinker !== "all" && item.ordre) {
             console.log(`Ajout d'un marqueur numéroté : ${item.ordre}, couleur : ${color}`);
@@ -29,13 +31,13 @@ function drawMarkers() {
                 map
             ));
         } else {
-            console.log(`Ajout d'un marqueur classique : ${item.name}`);
+            console.log(`Ajout d'un marqueur standard : ${item.name}`);
             const marker = new google.maps.Marker({
                 position: { lat: item.lat, lng: item.lng },
                 map,
                 title: item.name || "Sans nom",
                 icon: {
-                    url: `https://maps.google.com/mapfiles/ms/icons/red-dot.png`,
+                    url: `https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_${color}.png`,
                     scaledSize: new google.maps.Size(30, 30),
                 },
             });
@@ -64,6 +66,8 @@ function drawMarkers() {
  * Crée un marqueur personnalisé avec un numéro affiché en CSS
  */
 function createNumberedMarker(position, number, color, map) {
+    console.log(`Création d'un OverlayView : Numéro ${number}, Couleur ${color}, Position`, position);
+
     const overlay = new google.maps.OverlayView();
 
     overlay.onAdd = function () {
@@ -71,11 +75,11 @@ function createNumberedMarker(position, number, color, map) {
         div.className = "marker-label";
         div.style.backgroundColor = `#${color}`;
         div.style.position = "absolute";
-        div.style.width = "24px";
-        div.style.height = "24px";
+        div.style.width = "26px";
+        div.style.height = "26px";
         div.style.borderRadius = "50%";
         div.style.textAlign = "center";
-        div.style.lineHeight = "24px";
+        div.style.lineHeight = "26px";
         div.style.fontSize = "14px";
         div.style.fontWeight = "bold";
         div.style.color = "white";
@@ -93,8 +97,8 @@ function createNumberedMarker(position, number, color, map) {
 
         const positionPixel = projection.fromLatLngToDivPixel(new google.maps.LatLng(position.lat, position.lng));
         if (this.div) {
-            this.div.style.left = `${positionPixel.x - 12}px`; // Centrer l'icône
-            this.div.style.top = `${positionPixel.y - 12}px`;
+            this.div.style.left = `${positionPixel.x - 13}px`;
+            this.div.style.top = `${positionPixel.y - 13}px`;
         }
     };
 
