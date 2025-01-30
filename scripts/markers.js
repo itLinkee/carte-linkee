@@ -54,3 +54,27 @@ function drawMarkers() {
         markers.push(marker);
     });
 }
+
+function createNumberedMarker(position, number, color, map) {
+    const markerDiv = document.createElement("div");
+    markerDiv.className = "marker-label";
+    markerDiv.innerHTML = number;
+    markerDiv.style.backgroundColor = `#${color}`;
+    
+    const marker = new google.maps.Marker({
+        position,
+        map,
+        label: {
+            text: number.toString(),
+            color: "white",
+            fontSize: "12px",
+            fontWeight: "bold",
+        },
+        icon: {
+            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+            labelOrigin: new google.maps.Point(10, 30),
+        },
+    });
+
+    return marker;
+}
