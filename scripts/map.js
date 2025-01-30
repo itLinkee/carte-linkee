@@ -34,6 +34,7 @@ function loadDataAndDraw() {
     fetch(dataUrl)
         .then(response => response.json())
         .then(data => {
+            console.log("données chargées :", data);
             dataPoints = data;
             drawMarkers();
         })
