@@ -13,7 +13,11 @@ function drawMarkers() {
         let color = "808080"; // Couleur par défaut (gris)
 
         if (mode === "type") {
-            color = getColorForType(item.type) || "808080";
+            color = getColorForType(item.type);
+if (!color) {
+    console.warn(`Couleur non trouvée pour le type : ${item.type}`);
+    color = "FF00FF"; // Magenta pour voir les erreurs
+}
         } else if (mode === "statut") {
             color = getColorForStatut(item.statut) || "808080";
         } else if (mode === "Collected") {
