@@ -8,27 +8,50 @@ function drawMarkers() {
     filteredData.sort((a, b) => (a.ordre || 0) - (b.ordre || 0));
 
     filteredData.forEach((item) => {
-        let backgroundColor = "808080";
+        let color = "red"; // Couleur par défaut
 
+        // Déterminer la couleur de fond selon le mode sélectionné
         if (mode === "type") {
-            backgroundColor = getColorForType(item.type);
+            color = getColorForType(item.type) || "red";
         } else if (mode === "statut") {
-            backgroundColor = getColorForStatut(item.statut);
+            color = getColorForStatut(item.statut) || "red";
         } else {
-            backgroundColor = getColorForCollect(item.collected);
+            color = getColorForCollect(item.collected) || "red";
         }
 
         if (selectedLinker !== "all" && item.ordre) {
-            markers.push(createNumberedMarker({ lat: item.lat, lng: item.lng }, item.ordre, backgroundColor, map));
+            // Utiliser un marqueur numéroté avec une couleur spécifique
+            markers.push(createNumberedMarker(
+                { lat: item.lat, lng: item.lng },
+                item.ordre,
+                color,
+                map,
+                item
+            ));
         } else {
+            // Marqueurs standard avec les infobulles
             const marker = new google.maps.Marker({
                 position: { lat: item.lat, lng: item.lng },
                 map,
                 title: item.name || "Sans nom",
                 icon: {
-                    url: ICONS_BY_TYPE[item.type] || DEFAULT_TYPE_ICON,
+                    url: `https://maps.google.com/mapfiles/ms/icons/${color}-dot.png`,
                     scaledSize: new google.maps.Size(30, 30),
                 },
+            });
+
+            // Ajouter l'infobulle
+            marker.addListener("click", () => {
+                const contentString = `
+                    <strong>${item.ordre ? item.ordre + ". " : ""}${item.name}</strong><br>
+                    Tournée : ${item.linker || "Non spécifié"}<br>
+                    Ordre : ${item.ordre !== undefined ? item.ordre : "Non défini"}<br>
+                    Type : ${item.type}<br>
+                    Statut : ${item.statut}<br>
+                    Asso partenaire : ${item.partenaire}<br>
+                `;
+                infoWindow.setContent(contentString);
+                infoWindow.open(map, marker);
             });
 
             markers.push(marker);
