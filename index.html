@@ -12,19 +12,20 @@
             margin: 10px 0;
         }
         .marker-label {
-        position: absolute;
-        background-color: red;
-        color: white;
-        font-size: 14px;
-        font-weight: bold;
-        padding: 2px 5px;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        text-align: center;
-        line-height: 20px;
-        transform: translate(-50%, -50%);
-        }
+    position: absolute;
+    background-color: red; /* Couleur par défaut */
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    transform: translate(-50%, -50%);
+    pointer-events: none; /* Permet de cliquer à travers */
+}
     </style>
 </head>
 <body>
