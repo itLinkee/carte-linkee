@@ -1,4 +1,5 @@
 function drawMarkers() {
+    console.log("drawMarkers() exécuté !");
     clearMarkers();
 
     const mode = document.getElementById("colorModeSelect").value;
