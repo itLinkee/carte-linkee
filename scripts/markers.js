@@ -10,9 +10,9 @@ function drawMarkers() {
     // Trier par ordre croissant (ordre de la tournée)
     filteredData.sort((a, b) => (a.ordre || 0) - (b.ordre || 0));
 
-    filteredData.forEach(item => {
+    filteredData.forEach((item) => {
         let iconUrl;
-        let backgroundColor = "808080"; // Gris par défaut (si aucune condition ne correspond)
+        let backgroundColor = "808080"; // Gris par défaut
 
         // Déterminer la couleur de fond selon le mode sélectionné
         if (mode === "type") {
@@ -23,21 +23,32 @@ function drawMarkers() {
             backgroundColor = getColorForCollect(item.collected);
         }
 
-        // Vérifier si un linker spécifique est sélectionné et afficher l'ordre
         if (selectedLinker !== "all" && item.ordre) {
+            // Utiliser une icône numérotée si un Linker spécifique est sélectionné et un ordre existe
             iconUrl = getNumberedIcon(item.ordre, backgroundColor);
         } else {
-            // Sinon, utiliser les icônes standardisées
+            // Sinon, utiliser les icônes standardisées selon le mode sélectionné
             iconUrl = ICONS_BY_TYPE[item.type] || ICONS_BY_STATUT[item.statut] || ICONS_BY_COLLECT[item.collected] || DEFAULT_TYPE_ICON;
         }
 
+        // Création du marqueur
         const marker = new google.maps.Marker({
             position: { lat: item.lat, lng: item.lng },
             map,
             title: `${item.ordre ? item.ordre + ". " : ""}${item.name || "Sans nom"}`,
-            icon: iconUrl
+            icon: {
+                url: iconUrl,
+                scaledSize: new google.maps.Size(30, 30),
+            },
+            label: selectedLinker !== "all" && item.ordre ? {
+                text: item.ordre.toString(),
+                color: "white",
+                fontSize: "12px",
+                fontWeight: "bold",
+            } : null
         });
 
+        // Ajout de l'événement d'affichage d'infobulle
         marker.addListener("click", () => {
             const contentString = `
                 <strong>${item.ordre ? item.ordre + ". " : ""}${item.name}</strong><br>
@@ -55,26 +66,9 @@ function drawMarkers() {
     });
 }
 
-function createNumberedMarker(position, number, color, map) {
-    const markerDiv = document.createElement("div");
-    markerDiv.className = "marker-label";
-    markerDiv.innerHTML = number;
-    markerDiv.style.backgroundColor = `#${color}`;
-    
-    const marker = new google.maps.Marker({
-        position,
-        map,
-        label: {
-            text: number.toString(),
-            color: "white",
-            fontSize: "12px",
-            fontWeight: "bold",
-        },
-        icon: {
-            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-            labelOrigin: new google.maps.Point(10, 30),
-        },
-    });
-
-    return marker;
+/**
+ * Génère une icône numérotée avec une couleur de fond spécifique
+ */
+function getNumberedIcon(number, color) {
+    return `https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=${number}|${color}|FFFFFF`;
 }
