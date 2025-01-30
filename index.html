@@ -23,16 +23,21 @@
             <option value="statut">Statut</option>
             <option value="Collected">Collected</option>
         </select>
+
+        <label for="linkerSelect">Choisir la tournée :</label>
+        <select id="linkerSelect">
+            <option value="all" selected>Toutes les tournées</option>
+            <!-- Les options seront remplies dynamiquement via linkers.js -->
+        </select>
     </div>
 
     <div id="map"></div>
-
-    
 
     <!-- Chargement des scripts externes -->
     <script src="scripts/config.js"></script>
     <script src="scripts/map.js"></script>
     <script src="scripts/markers.js"></script>
+    <script src="scripts/linkers.js"></script> <!-- Ajout dynamique des Linkers -->
     <script src="scripts/utils.js"></script>
 
     <!-- Charge la Google Maps API -->
