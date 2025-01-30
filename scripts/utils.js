@@ -9,3 +9,27 @@ function getNumberedIcon(number, color) {
 }
 
 window.getNumberedIcon = getNumberedIcon;
+
+function generateCustomMarker(color, number) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 40;
+    canvas.height = 40;
+    const ctx = canvas.getContext("2d");
+
+    // Dessiner le fond du marqueur
+    ctx.fillStyle = `#${color}`;
+    ctx.beginPath();
+    ctx.arc(20, 20, 18, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Ajouter le numéro
+    ctx.fillStyle = "white";
+    ctx.font = "bold 14px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(number, 20, 20);
+
+    return canvas.toDataURL("image/png");
+}
+
+window.generateCustomMarker = generateCustomMarker;
