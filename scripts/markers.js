@@ -2,8 +2,13 @@ function drawMarkers() {
     clearMarkers();
 
     const mode = document.getElementById("colorModeSelect").value;
+    const selectedLinker = document.getElementById("linkerSelect").value;
 
     dataPoints.forEach(item => {
+        if (selectedLinker !== "all" && item.linker !== selectedLinker) {
+            return; // Filtre : n'affiche que les markers du linker sélectionné
+        }
+
         let iconUrl;
         if (mode === "type") {
             iconUrl = ICONS_BY_TYPE[item.type] || DEFAULT_TYPE_ICON;
@@ -23,6 +28,7 @@ function drawMarkers() {
         marker.addListener("click", () => {
             const contentString = `
                 <strong>${item.name}</strong><br>
+                Tournée : ${item.linker || "Non spécifié"}<br>
                 Type : ${item.type}<br>
                 Statut : ${item.statut}<br>
                 Asso partenaire : ${item.partenaire}<br>
