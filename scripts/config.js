@@ -27,7 +27,7 @@ function getColorForType(type) {
         "Pris": "00FF00",     // Vert
         "Pas pris": "FF0000"  // Rouge
     };
-    return colors[type] || "808080"; // Gris par défaut
+    return colors[type] || "FFFF00"; // Gris par défaut
 }
 
 function getColorForStatut(statut) {
@@ -37,7 +37,7 @@ function getColorForStatut(statut) {
         "Collecte déclarée ko": "808080",  // Gris
         "Panier déclaré": "008000"   // Vert foncé
     };
-    return colors[statut] || "808080"; // Gris par défaut
+    return colors[statut] || "FFFF00"; // Gris par défaut
 }
 
 function getColorForCollect(collected) {
@@ -46,5 +46,5 @@ function getColorForCollect(collected) {
         "Livré": "008000",    // Vert
         "Annulé": "FF0000"    // Rouge
     };
-    return colors[collected] || "808080"; // Gris par défaut
+    return colors[collected] || "FFFF00"; // Gris par défaut
 }
