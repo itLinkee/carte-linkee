@@ -3,6 +3,6 @@ function clearMarkers() {
     markers = [];
 }
 
-function getNumberedIcon(number) {
-    return `https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=${number}|FF0000|FFFFFF`;
+function getNumberedIcon(number, color) {
+    return `https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=${number}|${color}|FFFFFF`;
 }
