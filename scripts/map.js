@@ -26,7 +26,9 @@ function initMap() {
     });
 }
 
-window.initMap = initMap;
+document.addEventListener("DOMContentLoaded", () => {
+    window.initMap = initMap;
+});
 
 function loadDataAndDraw() {
     fetch(dataUrl)
