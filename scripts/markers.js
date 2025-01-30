@@ -36,6 +36,7 @@ function drawMarkers() {
     });
 }
 
+
 /**
  * Crée un marqueur personnalisé avec un numéro affiché en CSS
  */
