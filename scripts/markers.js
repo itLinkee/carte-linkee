@@ -8,28 +8,24 @@ function drawMarkers() {
     filteredData.sort((a, b) => (a.ordre || 0) - (b.ordre || 0));
 
     filteredData.forEach((item) => {
-        let color = "red"; // Couleur par défaut
+        let color = "808080"; // Gris par défaut
 
-        // Déterminer la couleur de fond selon le mode sélectionné
         if (mode === "type") {
-            color = getColorForType(item.type) || "red";
+            color = getColorForType(item.type) || "808080";
         } else if (mode === "statut") {
-            color = getColorForStatut(item.statut) || "red";
+            color = getColorForStatut(item.statut) || "808080";
         } else {
-            color = getColorForCollect(item.collected) || "red";
+            color = getColorForCollect(item.collected) || "808080";
         }
 
         if (selectedLinker !== "all" && item.ordre) {
-            // Utiliser un marqueur numéroté avec une couleur spécifique
             markers.push(createNumberedMarker(
                 { lat: item.lat, lng: item.lng },
                 item.ordre,
                 color,
-                map,
-                item
+                map
             ));
         } else {
-            // Marqueurs standard avec les infobulles
             const marker = new google.maps.Marker({
                 position: { lat: item.lat, lng: item.lng },
                 map,
@@ -39,7 +35,7 @@ function drawMarkers() {
                     scaledSize: new google.maps.Size(30, 30),
                 },
             });
-
+            
             // Ajouter l'infobulle
             marker.addListener("click", () => {
                 const contentString = `
@@ -70,13 +66,21 @@ function createNumberedMarker(position, number, color, map) {
         const div = document.createElement("div");
         div.className = "marker-label";
         div.style.backgroundColor = `#${color}`;
+        div.style.position = "absolute";
+        div.style.width = "24px";
+        div.style.height = "24px";
+        div.style.borderRadius = "50%";
+        div.style.textAlign = "center";
+        div.style.lineHeight = "24px";
+        div.style.fontSize = "14px";
+        div.style.fontWeight = "bold";
+        div.style.color = "white";
+        div.style.boxShadow = "0px 0px 4px rgba(0,0,0,0.5)";
         div.textContent = number;
-        
-        // Ajout à la couche d'affichage de la carte
-        const panes = this.getPanes();
-        panes.overlayMouseTarget.appendChild(div);
 
         this.div = div;
+        const panes = this.getPanes();
+        panes.overlayMouseTarget.appendChild(div);
     };
 
     overlay.draw = function () {
@@ -84,10 +88,9 @@ function createNumberedMarker(position, number, color, map) {
         if (!projection) return;
 
         const positionPixel = projection.fromLatLngToDivPixel(new google.maps.LatLng(position.lat, position.lng));
-        
         if (this.div) {
-            this.div.style.left = `${positionPixel.x}px`;
-            this.div.style.top = `${positionPixel.y}px`;
+            this.div.style.left = `${positionPixel.x - 12}px`; // Centrer l'icône
+            this.div.style.top = `${positionPixel.y - 12}px`;
         }
     };
 
