@@ -6,9 +6,11 @@ function drawMarkers() {
     const selectedLinker = document.getElementById("linkerSelect").value;
 
     let filteredData = dataPoints.filter(item => selectedLinker === "all" || item.linker === selectedLinker);
+    console.log("Données filtrées :", filteredData);
     filteredData.sort((a, b) => (a.ordre || 0) - (b.ordre || 0));
 
     filteredData.forEach((item) => {
+        console.log(`Création du marqueur : ${item.name}, ordre : ${item.ordre}`);
         let color = "808080"; // Gris par défaut
 
         if (mode === "type") {
