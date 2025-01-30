@@ -1,16 +1,15 @@
 function drawMarkers() {
-    console.log("drawMarkers() exécuté !");
     clearMarkers();
 
     const mode = document.getElementById("colorModeSelect").value;
     const selectedLinker = document.getElementById("linkerSelect").value;
 
     let filteredData = dataPoints.filter(item => selectedLinker === "all" || item.linker === selectedLinker);
-    console.log("Données filtrées :", filteredData);
     filteredData.sort((a, b) => (a.ordre || 0) - (b.ordre || 0));
 
+    console.log("Données filtrées :", filteredData);
+
     filteredData.forEach((item) => {
-        console.log(`Création du marqueur : ${item.name}, ordre : ${item.ordre}`);
         let color = "808080"; // Gris par défaut
 
         if (mode === "type") {
@@ -22,6 +21,7 @@ function drawMarkers() {
         }
 
         if (selectedLinker !== "all" && item.ordre) {
+            console.log(`Ajout d'un marqueur numéroté : ${item.ordre}, couleur : ${color}`);
             markers.push(createNumberedMarker(
                 { lat: item.lat, lng: item.lng },
                 item.ordre,
@@ -29,12 +29,13 @@ function drawMarkers() {
                 map
             ));
         } else {
+            console.log(`Ajout d'un marqueur classique : ${item.name}`);
             const marker = new google.maps.Marker({
                 position: { lat: item.lat, lng: item.lng },
                 map,
                 title: item.name || "Sans nom",
                 icon: {
-                    url: `https://maps.google.com/mapfiles/ms/icons/${color}-dot.png`,
+                    url: `https://maps.google.com/mapfiles/ms/icons/red-dot.png`,
                     scaledSize: new google.maps.Size(30, 30),
                 },
             });
