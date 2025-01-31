@@ -92,13 +92,17 @@ function createNumberedMarker(position, number, color, map, item) {
         div.style.fontWeight = "bold";
         div.style.color = "white";
         div.style.boxShadow = "0px 0px 4px rgba(0,0,0,0.5)";
+        div.style.cursor = "pointer"; // Permet d'afficher le curseur clic
         div.textContent = number;
 
         this.div = div;
         const panes = this.getPanes();
         panes.overlayMouseTarget.appendChild(div);
 
-         // Ajouter l'infobulle
+        // Vérification : Item est bien défini ?
+        console.log("Données du marqueur :", item);
+
+        // Ajouter l'infobulle
         const infoWindow = new google.maps.InfoWindow({
             content: `
                 <strong>${item.ordre ? item.ordre + ". " : ""}${item.name}</strong><br>
@@ -111,12 +115,11 @@ function createNumberedMarker(position, number, color, map, item) {
         });
 
         // Ajouter l'événement de clic pour afficher l'infobulle
-        div.addEventListener("click", () => {
+        google.maps.event.addDomListener(div, "click", () => {
+            console.log(`Infobulle cliquée pour le marqueur : ${item.name}`);
             infoWindow.setPosition(position);
-            infoWindow.open(overlay.getMap());
+            infoWindow.open(map); // Utiliser `map` au lieu de `overlay.getMap()`
         });
-
-        
     };
 
     overlay.draw = function () {
@@ -138,6 +141,6 @@ function createNumberedMarker(position, number, color, map, item) {
     };
 
     overlay.setMap(map);
-    overlay.getmap();
     return overlay;
 }
+
