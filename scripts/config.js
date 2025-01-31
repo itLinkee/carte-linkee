@@ -48,3 +48,14 @@ function getColorForCollect(collected) {
     };
     return colors[collected] || "FFFF00"; // Gris par défaut
 }
+
+function convertHexToColorName(hex) {
+    const colorMap = {
+        "00FF00": "green",
+        "FF0000": "red",
+        "FFFF00": "yellow",
+        "0000FF": "blue",
+        "808080": "grey"
+    };
+    return colorMap[hex] || "grey"; // Par défaut, gris si la couleur n'existe pas
+}
