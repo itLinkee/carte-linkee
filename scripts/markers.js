@@ -113,7 +113,7 @@ function createNumberedMarker(position, number, color, map, item) {
         // Ajouter l'événement de clic pour afficher l'infobulle
         div.addEventListener("click", () => {
             infoWindow.setPosition(position);
-            infoWindow.open(map);
+            infoWindow.open(overlay.getMap());
         });
 
         
@@ -138,5 +138,6 @@ function createNumberedMarker(position, number, color, map, item) {
     };
 
     overlay.setMap(map);
+    overlay.getmap();
     return overlay;
 }
