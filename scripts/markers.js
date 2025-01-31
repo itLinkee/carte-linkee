@@ -33,7 +33,8 @@ if (!color) {
                 { lat: item.lat, lng: item.lng },
                 item.ordre,
                 color,
-                map
+                map,
+                item
             ));
         } else {
             console.log(`Ajout d'un marqueur standard : ${item.name}`);
@@ -71,13 +72,14 @@ if (!color) {
 /**
  * Crée un marqueur personnalisé avec un numéro affiché en CSS
  */
-function createNumberedMarker(position, number, color, map) {
+function createNumberedMarker(position, number, color, map, item) {
     console.log(`Création d'un OverlayView : Numéro ${number}, Couleur ${color}, Position`, position);
 
     const overlay = new google.maps.OverlayView();
+    let div;
 
     overlay.onAdd = function () {
-        const div = document.createElement("div");
+        div = document.createElement("div");
         div.className = "marker-label";
         div.style.backgroundColor = `#${color}`;
         div.style.position = "absolute";
@@ -91,6 +93,10 @@ function createNumberedMarker(position, number, color, map) {
         div.style.color = "white";
         div.style.boxShadow = "0px 0px 4px rgba(0,0,0,0.5)";
         div.textContent = number;
+
+        this.div = div;
+        const panes = this.getPanes();
+        panes.overlayMouseTarget.appendChild(div);
 
          // Ajouter l'infobulle
         const infoWindow = new google.maps.InfoWindow({
@@ -110,9 +116,7 @@ function createNumberedMarker(position, number, color, map) {
             infoWindow.open(map);
         });
 
-        this.div = div;
-        const panes = this.getPanes();
-        panes.overlayMouseTarget.appendChild(div);
+        
     };
 
     overlay.draw = function () {
