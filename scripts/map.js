@@ -30,11 +30,37 @@ document.addEventListener("DOMContentLoaded", () => {
     window.initMap = initMap;
 });
 
+function switchMap() {
+    currentSet = currentSet === "set1" ? "set2" : "set1";
+    dataUrl = dataUrls[currentSet];
+
+    // Charger les nouveaux scripts
+    loadScript(scriptSets[currentSet].markersScript, () => {
+        loadScript(scriptSets[currentSet].utilsScript, () => {
+            console.log("Scripts chargés, rechargement des données...");
+            loadDataAndDraw();
+        });
+    });
+}
+
+function loadScript(scriptName, callback) {
+    const existingScript = document.querySelector(`script[src="${scriptName}"]`);
+    if (existingScript) {
+        existingScript.remove();
+    }
+    const script = document.createElement("script");
+    script.src = scriptName;
+    script.onload = callback;
+    document.body.appendChild(script);
+}
+
+document.getElementById("toggleMap").addEventListener("click", switchMap);
+
 function loadDataAndDraw() {
     fetch(dataUrl)
         .then(response => response.json())
         .then(data => {
-            console.log("données chargées :", data);
+            console.log("Données chargées :", data);
             dataPoints = data;
             drawMarkers();
         })
