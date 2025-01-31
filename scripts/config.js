@@ -10,7 +10,7 @@ const scriptSets = {
     },
     set2: {
         markersScript: "alternativeMarkers.js",
-        utilsScript: "alternativeUtils.js"
+        utilsScript: "utils.js"
     }
 };
 
