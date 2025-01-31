@@ -24,6 +24,8 @@ if (!color) {
             color = getColorForCollect(item.collected) || "808080";
         }
 
+        let colorName = convertHexToColorName(color);
+
     
 
         if (selectedLinker !== "all" && item.ordre) {
@@ -35,7 +37,7 @@ if (!color) {
             ));
         } else {
             console.log(`Ajout d'un marqueur standard : ${item.name}`);
-            const iconUrl = `https://maps.google.com/mapfiles/ms/icons/${color}-dot.png`;
+            const iconUrl = `https://maps.google.com/mapfiles/ms/icons/${colorName}-dot.png`;
             const marker = new google.maps.Marker({
                 position: { lat: item.lat, lng: item.lng },
                 map,
