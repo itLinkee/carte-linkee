@@ -24,10 +24,9 @@ if (!color) {
             color = getColorForCollect(item.collected) || "808080";
         }
 
-        console.log(`Marker ${item.name} - Type : ${item.type}, Statut : ${item.statut}, Collecté : ${item.collected}, Couleur : ${color}`);
+    
 
         if (selectedLinker !== "all" && item.ordre) {
-            console.log(`Ajout d'un marqueur numéroté : ${item.ordre}, couleur : ${color}`);
             markers.push(createNumberedMarker(
                 { lat: item.lat, lng: item.lng },
                 item.ordre,
@@ -36,12 +35,13 @@ if (!color) {
             ));
         } else {
             console.log(`Ajout d'un marqueur standard : ${item.name}`);
+            const iconUrl = `https://maps.google.com/mapfiles/ms/icons/${color}-dot.png`;
             const marker = new google.maps.Marker({
                 position: { lat: item.lat, lng: item.lng },
                 map,
                 title: item.name || "Sans nom",
                 icon: {
-                    url: `https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_${color}.png`,
+                    url: iconUrl,
                     scaledSize: new google.maps.Size(30, 30),
                 },
             });
@@ -89,6 +89,24 @@ function createNumberedMarker(position, number, color, map) {
         div.style.color = "white";
         div.style.boxShadow = "0px 0px 4px rgba(0,0,0,0.5)";
         div.textContent = number;
+
+         // Ajouter l'infobulle
+        const infoWindow = new google.maps.InfoWindow({
+            content: `
+                <strong>${item.ordre ? item.ordre + ". " : ""}${item.name}</strong><br>
+                Tournée : ${item.linker || "Non spécifié"}<br>
+                Ordre : ${item.ordre !== undefined ? item.ordre : "Non défini"}<br>
+                Type : ${item.type}<br>
+                Statut : ${item.statut}<br>
+                Asso partenaire : ${item.partenaire}<br>
+            `,
+        });
+
+        // Ajouter l'événement de clic pour afficher l'infobulle
+        div.addEventListener("click", () => {
+            infoWindow.setPosition(position);
+            infoWindow.open(map);
+        });
 
         this.div = div;
         const panes = this.getPanes();
