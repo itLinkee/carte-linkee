@@ -1,4 +1,21 @@
-const dataUrl = "https://raw.githubusercontent.com/itLinkee/carte-linkee/refs/heads/main/data.json";
+const dataUrls = {
+    set1: "https://raw.githubusercontent.com/itLinkee/carte-linkee/refs/heads/main/data.json",
+    set2: "https://raw.githubusercontent.com/itLinkee/carte-linkee/refs/heads/main/otherData.json"
+};
+
+const scriptSets = {
+    set1: {
+        markersScript: "markers.js",
+        utilsScript: "utils.js"
+    },
+    set2: {
+        markersScript: "alternativeMarkers.js",
+        utilsScript: "alternativeUtils.js"
+    }
+};
+
+let currentSet = "set1";
+let dataUrl = dataUrls[currentSet];
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 min en millisecondes
 
 const ICONS_BY_TYPE = {
