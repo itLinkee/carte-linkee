@@ -1,6 +1,6 @@
 const dataUrls = {
-    set1: "https://raw.githubusercontent.com/itLinkee/carte-linkee/refs/heads/main/data.json",
-    set2: "https://raw.githubusercontent.com/itLinkee/carte-linkee/refs/heads/main/otherData.json"
+    set1: "https://raw.githubusercontent.com/itLinkee/carte-linkee/refs/heads/main/dataLinks.json",
+    set2: "https://raw.githubusercontent.com/itLinkee/carte-linkee/refs/heads/main/dataCRM.json"
 };
 
 const scriptSets = {
