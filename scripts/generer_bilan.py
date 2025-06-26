@@ -23,28 +23,29 @@ def generer_bilan(veh_index, date_bilan):
         date_bilan (date|str)   : date ou 'YYYY-MM-DD'
 
     Returns:
-        str : JSON avec numero_vehicule, date, km_total, temps_total, arrets
+        str : JSON avec numero_vehicule, date, km_total, temps_total_sec,
+              arrets, heure_debut_mouvement, heure_fin_mouvement
     """
     # normaliser date
     if isinstance(date_bilan, str):
         date_bilan = datetime.strptime(date_bilan, "%Y-%m-%d").date()
     # bornes UTC de la journée
-    jour = date_bilan
+    jour  = date_bilan
     debut = datetime(jour.year, jour.month, jour.day, 0, 0, 0, tzinfo=timezone.utc)
     fin   = debut + timedelta(days=1) - timedelta(seconds=1)
 
     # connexion et traceur
-    cfg = Config(username=USERNAME, password=PASSWORD)
-    cli = Client(cfg)
+    cfg      = Config(username=USERNAME, password=PASSWORD)
+    cli      = Client(cfg)
     trackers = cli.get_trackers()
     if not 0 <= veh_index < len(trackers):
         raise IndexError(f"veh_index {veh_index} hors de portée")
     tracker = trackers[veh_index]
-    numero = getattr(tracker, "name", tracker.id)
+    numero  = getattr(tracker, "name", tracker.id)
 
     # récupération des points
-    points = []
-    curseur = debut
+    points       = []
+    curseur      = debut
     while True:
         batch = cli.get_locations(
             device=tracker,
@@ -72,35 +73,52 @@ def generer_bilan(veh_index, date_bilan):
     km_total  = sum(distances)
     tps_total = sum(durees)
 
-    # détection des arrêts (position + durée)
+    # détermination du début et de la fin de mouvement
     seuil_ms = PAUSE_VIT_KMH * 1000 / 3600
-    arrets, pause_debut_idx = [], None
-
-    for idx, ((km, sec), p0, p1) in enumerate(zip(zip(distances, durees), points, points[1:])):
-        vit = (km*1000)/sec if sec>0 else 0
-        if vit < seuil_ms:
-            if pause_debut_idx is None:
-                pause_debut_idx = idx
-            pause_fin_idx = idx
+    # les indices où la vitesse >= seuil
+    idxs_mouv = [
+        idx for idx, (km, sec) in enumerate(zip(distances, durees))
+        if sec > 0 and (km * 1000 / sec) >= seuil_ms
+    ]
+    if idxs_mouv:
+        idx_deb = idxs_mouv[0]
+        heure_debut_mouvement = points[idx_deb].datetime.isoformat()
+        idx_fin = idxs_mouv[-1] + 1
+        # protéger limite hors liste
+        if idx_fin < len(points):
+            heure_fin_mouvement = points[idx_fin].datetime.isoformat()
         else:
-            if pause_debut_idx is not None:
-                dur = sum(durees[pause_debut_idx:pause_fin_idx+1])
+            heure_fin_mouvement = points[-1].datetime.isoformat()
+    else:
+        heure_debut_mouvement = None
+        heure_fin_mouvement   = None
+
+    # détection des arrêts (position + durée)
+    arrets, pause_deb = [], None
+    for idx, ((km, sec), p0, p1) in enumerate(zip(zip(distances, durees), points, points[1:])):
+        vit = (km * 1000) / sec if sec > 0 else 0
+        if vit < seuil_ms:
+            if pause_deb is None:
+                pause_deb = idx
+            pause_fin = idx
+        else:
+            if pause_deb is not None:
+                dur = sum(durees[pause_deb:pause_fin+1])
                 if dur >= PAUSE_MIN_SEC:
-                    # on prend la position du début d'arrêt
-                    loc = points[pause_debut_idx]
+                    loc = points[pause_deb]
                     arrets.append({
                         "position": {"lat": loc.lat, "lng": loc.lng},
-                        "duree": dur
+                        "duree_sec": int(dur)
                     })
-                pause_debut_idx = None
-    # dernier arrêt éventuel
-    if pause_debut_idx is not None:
-        dur = sum(durees[pause_debut_idx:pause_fin_idx+1])
+                pause_deb = None
+    # dernier arrêt
+    if pause_deb is not None:
+        dur = sum(durees[pause_deb:pause_fin+1])
         if dur >= PAUSE_MIN_SEC:
-            loc = points[pause_debut_idx]
+            loc = points[pause_deb]
             arrets.append({
                 "position": {"lat": loc.lat, "lng": loc.lng},
-                "duree": dur
+                "duree_sec": int(dur)
             })
 
     # format JSON
@@ -109,16 +127,13 @@ def generer_bilan(veh_index, date_bilan):
         "date": jour.isoformat(),
         "km_total": round(km_total, 2),
         "temps_total_sec": int(tps_total),
-        "arrets": [
-            {
-                "position": a["position"],
-                "duree_sec": int(a["duree"])
-            } for a in arrets
-        ]
+        "arrets": arrets,
+        "heure_debut_mouvement": heure_debut_mouvement,
+        "heure_fin_mouvement": heure_fin_mouvement
     }
     return json.dumps(bilan, ensure_ascii=False, indent=2)
 
-# Exemple d'utilisation
+
 if __name__ == "__main__":
-    # bilan pour le traceur n°2 le 2025-06-23
+    # Exemple : traceur n°2 le 23 juin 2025
     print(generer_bilan(veh_index=2, date_bilan="2025-06-23"))
